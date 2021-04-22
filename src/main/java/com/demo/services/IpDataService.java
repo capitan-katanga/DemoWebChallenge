@@ -1,9 +1,8 @@
 package com.demo.services;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,14 +10,13 @@ import com.demo.model.BlackList;
 import com.demo.model.IpDataModel;
 import com.demo.model.fixer.FixerModel;
 import com.demo.model.ip2.Ip2CountryModel;
-import com.demo.model.restcountries.Currencies;
 import com.demo.model.restcountries.RestCountriesModel;
 import com.demo.repository.BlackListRepo;
 
 @Service
 public class IpDataService {
-	
-	private static final Logger log = LoggerFactory.getLogger(ApisService.class);
+
+	// private static final Logger log = LoggerFactory.getLogger(ApisService.class);
 
 	@Autowired
 	private ApisService apisService;
@@ -46,25 +44,23 @@ public class IpDataService {
 
 		String symbols = "";
 
-		for (Currencies cur : resCo.getCurrencies()) {
-			symbols += cur.getCode() + ",";
-		}
-
-		symbols = symbols.substring(0, symbols.length() - 1);
+		if (resCo != null)
+			symbols = resCo.getCurrencies().stream().map((c) -> c.getCode()).collect(Collectors.joining(","));
 
 		return symbols;
 	}
-	
+
 	public boolean ipInBlackList(String ipAddress) {
 		List<BlackList> listBlackList = blrepo.findAll();
-		for(BlackList bl: listBlackList) {
-			if(bl.getIpAddress().equals(ipAddress) ) {
-				log.info("La ip: " + ipAddress.toString() + " se encuentra en al lista negra");
-				return true;
-			}
-		}
-		log.info("La ip: " + ipAddress.toString() + " no se encuentra en al lista negra");
-		return false;
+
+		return listBlackList.stream().filter((black) -> black.getIpAddress().equals(ipAddress)).findAny().isPresent();
+
+		/*
+		 * for (BlackList bl : listBlackList) { if (bl.getIpAddress().equals(ipAddress))
+		 * { log.info("La ip: " + ipAddress.toString() +
+		 * " se encuentra en al lista negra"); return true; } } log.info("La ip: " +
+		 * ipAddress.toString() + " no se encuentra en al lista negra"); return false;
+		 */
 	}
 
 }

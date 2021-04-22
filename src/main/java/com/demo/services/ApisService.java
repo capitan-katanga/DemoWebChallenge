@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 import com.demo.model.fixer.FixerModel;
@@ -23,28 +24,39 @@ public class ApisService {
 
 		final String urlIp2Country = "https://api.ip2country.info/ip?";
 
-		ResponseEntity<Ip2CountryModel> response = restTemplate.getForEntity(urlIp2Country + ipAddress,
-				Ip2CountryModel.class);
+		try {
 
-		log.info(response.toString());
+			ResponseEntity<Ip2CountryModel> response = restTemplate.getForEntity(urlIp2Country + ipAddress,
+					Ip2CountryModel.class);
 
-		Ip2CountryModel ip2 = response.getBody();
+			log.info(response.toString());
 
-		return ip2;
+			Ip2CountryModel ip2 = response.getBody();
+
+			return ip2;
+
+		} catch (HttpStatusCodeException e) {
+			throw e;
+		}
 	}
 
 	public RestCountriesModel getRestCountries(String countryCode3) {
 
 		final String urlRestCountries = "https://restcountries.eu/rest/v2/alpha/";
 
-		ResponseEntity<RestCountriesModel> response = restTemplate.getForEntity(urlRestCountries + countryCode3,
-				RestCountriesModel.class);
+		try {
 
-		log.info(response.toString());
+			ResponseEntity<RestCountriesModel> response = restTemplate.getForEntity(urlRestCountries + countryCode3,
+					RestCountriesModel.class);
 
-		RestCountriesModel restCo = response.getBody();
+			log.info(response.toString());
 
-		return restCo;
+			RestCountriesModel restCo = response.getBody();
+
+			return restCo;
+		} catch (HttpStatusCodeException e) {
+			throw e;
+		}
 	}
 
 	public FixerModel getFixer(String symbols) {
@@ -53,17 +65,19 @@ public class ApisService {
 		final String key = "64b3c0c6417c6f48ec09cac9d638eb50";
 		final String params = "&base=eur&symbols=";
 
-		ResponseEntity<FixerModel> response = restTemplate
-				.getForEntity(urlFixer + key + params + symbols, FixerModel.class);
+		try {
+			ResponseEntity<FixerModel> response = restTemplate.getForEntity(urlFixer + key + params + symbols,
+					FixerModel.class);
 
-		log.info(response.toString());
+			log.info(response.toString());
 
-		FixerModel fix = response.getBody();
+			FixerModel fix = response.getBody();
 
-		return fix;
+			return fix;
+		} catch (HttpStatusCodeException e) {
+			throw e;
+		}
 
 	}
-	
-	
 
 }
