@@ -25,7 +25,7 @@ public class Controller {
 			return ResponseEntity.status(HttpStatus.OK).body(ipDataService.getIpData(ipAddress));
 		}
 
-		return null;
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new IpDataModel());
 
 	}
 
